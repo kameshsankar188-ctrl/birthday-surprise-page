@@ -850,7 +850,6 @@
                     wasPlayingBeforeMic = isPlaying;
                     if (isPlaying) {
                         pauseMusicPlayback();
-                        musicText.textContent = 'Paused for Candle Blow 🕯';
                     }
 
                     micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -867,8 +866,12 @@
 
                     detectBlow();
                 } catch (err) {
-                    statusText.textContent = 'Mic busy - use Tap Blow button!';
+                    statusText.textContent = err && err.name === 'NotAllowedError'
+                        ? 'Allow mic access, then try again'
+                        : 'Mic unavailable - use Tap Blow button!';
+                    console.error('Microphone setup failed:', err);
                     if (wasPlayingBeforeMic) {
+                        wasPlayingBeforeMic = false;
                         startMusicPlayback();
                     }
                 }
